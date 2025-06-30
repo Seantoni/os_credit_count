@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usa tu Crédito</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      padding: 20px;
+      background-color: #ffffff;
+    }
+    
+    .credit-notice {
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      max-width: 350px;
+      margin: 0 auto 16px auto;
+      background: linear-gradient(135deg, rgba(83, 196, 164, 0.1) 0%, rgba(119, 169, 254, 0.1) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 12px;
+      border: 1px solid #d94f1a;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 80px;
+    }
+    
+    .credit-notice.animate {
+      animation: attention-grab 1s ease-out 1;
+    }
+
+    @keyframes attention-grab {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      25% {
+        transform: scale(1.05) rotate(1deg);
+      }
+      50% {
+        transform: scale(1.05) rotate(-1deg);
+      }
+      75% {
+        transform: scale(1.05) rotate(1deg);
+      }
+      100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+      }
+    }
+    
+    .credit-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 20px;
+    }
+    
+    .credit-text-part {
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out, font-size 0.1s linear;
+      font-size: 0px; /* Initially take no space */
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    .credit-text-part.visible {
+      opacity: 1;
+      font-size: 14px; /* Grow to final size */
+    }
+
+    #credit-amount-container {
+      font-size: 42px; /* Initial large size */
+      font-weight: 700;
+      color: #5A5AA0;
+      display: inline-block; /* Needed for transforms if we add them */
+    }
+
+    #credit-amount-container.final-size {
+      animation: size-bounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      font-size: 18px; /* Final smaller size */
+    }
+    
+    .credit-subnote {
+      font-size: 12px;
+      text-align: center;
+      color: #555;
+      font-weight: 600;
+      margin-top: 4px;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out 0.2s; /* Delay to appear after main text */
+    }
+
+    .credit-subnote.visible {
+      opacity: 1;
+    }
+    
+    .credit-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .credit-right {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      text-align: left;
+    }
+    
+    .credit-text {
+      font-size: 14px;
+      font-weight: 400;
+      color: #333333;
+      letter-spacing: -0.016em;
+      font-family: 'Nunito', sans-serif;
+    }
+    
+    .credit-action {
+      font-size: 12px;
+      font-weight: 400;
+      color: #08447E;
+      letter-spacing: -0.012em;
+      font-family: 'Nunito', sans-serif;
+      line-height: 1.2;
+    }
+    
+    .credit-source {
+      font-size: 12px;
+      font-weight: 400;
+      color: #5A5AA0;
+      letter-spacing: -0.012em;
+      font-family: 'Nunito', sans-serif;
+      line-height: 1.2;
+    }
+    
+    .simplego-logo-inline {
+      height: 20px;
+      width: auto;
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0 4px;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+    }
+    
+    @keyframes size-bounce {
+      0% {
+        font-size: 42px;
+      }
+      30% {
+        font-size: 15px;
+      }
+      60% {
+        font-size: 22px;
+      }
+      100% {
+        font-size: 18px;
+      }
+    }
+    
+    .credit-header {
+      text-align: center;
+      background: linear-gradient(135deg, #7ee0cb 0%, #66d9c1 100%);
+      border-radius: 16px;
+      padding: 25px 20px;
+      margin-bottom: 30px;
+      color: #000;
+    }
+    
+    .credit-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    
+    .credit-amount {
+      font-size: 48px;
+      font-weight: 700;
+      margin: 10px 0;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .credit-subtitle {
+      font-size: 16px;
+      opacity: 0.8;
+      margin: 0;
+    }
+    
+    .compra-box {
+      border: 2px solid #cccccc;
+      padding: 16px 20px;
+      border-radius: 16px;
+      position: relative;
+      max-width: 350px;
+      width: 100%;
+      font-family: 'Nunito', sans-serif;
+      box-sizing: border-box;
+      overflow: visible;
+      background-color: white;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-bottom: 20px;
+      cursor: pointer;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .compra-box.selected {
+      border: 3px solid #d94f1a;
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(217, 79, 26, 0.2);
+    }
+
+    .compra-box::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      border: 3px solid white;
+      background-color: #cccccc;
+      border-radius: 50%;
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      box-shadow: 0 0 0 1px #cccccc;
+    }
+
+    .compra-box.selected::before {
+      background-color: #d94f1a;
+      box-shadow: 0 0 0 1px #d94f1a;
+    }
+
+    .best-choice {
+      position: absolute;
+      top: -12px;
+      left: 30px;
+      background-color: #7ee0cb;
+      color: black;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .special-offer {
+      position: absolute;
+      top: -12px;
+      left: 30px;
+      background-color: #f8c156;
+      color: black;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    .description {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .price-section {
+      margin-bottom: 15px;
+    }
+
+    .price-discount-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: baseline;
+      width: 100%;
+      margin: 0 0 10px 0;
+      height: 28px;
+    }
+
+    .precio-original {
+      text-decoration: line-through;
+      color: #999;
+      font-weight: normal;
+      font-size: 16px;
+      margin-right: 15px;
+    }
+
+    .precio-final {
+      color: #d94f1a;
+      font-weight: 700;
+      font-size: 24px;
+      margin-right: 15px;
+    }
+
+    .descuento {
+      background-color: #7ee0cb;
+      color: #000000;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      height: 20px;
+    }
+
+    .final-price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 8px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .final-price-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .final-price-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #d94f1a;
+    }
+
+    .cta-button {
+      display: block;
+      width: 100%;
+      background-color: #d94f1a;
+      color: white;
+      border: none;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Nunito', sans-serif;
+      margin-top: 15px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-button:hover {
+      background-color: #c44419;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(217, 79, 26, 0.3);
+    }
+
+    .purchase-options {
+      max-width: 350px;
+      margin: 0 auto;
+    }
+
+    #comprarBtn {
+      max-width: 350px;
+      margin: 20px auto 0 auto;
+      display: block;
+    }
+
+    h1 {
+      font-family: 'Nunito', sans-serif;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .savings-highlight {
+      background-color: #e8f5e8;
+      color: #28a745;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 5px;
+    }
+
+    .credit-amount-highlight {
+      background: linear-gradient(135deg, #53C4A4 0%, #77A9FE 100%);
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 20px;
+      display: inline-block;
+      box-shadow: 0 1px 2px rgba(83, 196, 164, 0.3), 0 3px 8px rgba(119, 169, 254, 0.2);
+      border: none;
+      position: relative;
+      overflow: hidden;
+      transform: scale(1);
+      transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      font-family: 'Nunito', sans-serif;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    
+    .credit-amount-highlight:hover {
+      transform: scale(1.01);
+      box-shadow: 0 2px 4px rgba(83, 196, 164, 0.4), 0 6px 12px rgba(119, 169, 254, 0.3);
+    }
+    
+    .credit-amount-highlight.bounce-finish {
+      animation: softBounce 0.6s ease-out;
+    }
+    
+    @keyframes softBounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
+      
+      .credit-notice {
+        max-width: 100%;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        margin-left: 12px;
+        margin-right: 12px;
+      }
+      
+      .credit-line {
+        gap: 5px;
+      }
+      
+      .credit-left {
+        gap: 6px;
+      }
+      
+      .credit-right {
+        gap: 0;
+      }
+      
+      .credit-text {
+        font-size: 13px;
+      }
+      
+      .credit-action {
+        font-size: 11px;
+      }
+      
+      .credit-source {
+        font-size: 11px;
+      }
+      
+      .simplego-logo-inline {
+        height: 14px;
+        margin: 0 1px;
+      }
+      
+      .credit-amount-highlight {
+        font-size: 16px;
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+      
+      .credit-header {
+        padding: 20px 15px;
+      }
+      
+      .credit-amount {
+        font-size: 40px;
+      }
+      
+      .compra-box {
+        max-width: 100%;
+        padding: 14px 16px;
+      }
+      
+      .precio-final {
+        font-size: 22px;
+      }
+    }
+
+    .ahorro-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #fd7e14;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="credit-notice">
+      <div class="credit-line">
+        <span id="credit-text-before" class="credit-text-part">🎉 Tu crédito de&nbsp;</span>
+        <strong id="credit-amount-container">
+          $<span id="creditCounter">0.00</span>
+        </strong>
+        <span id="credit-text-after" class="credit-text-part">&nbsp;aplica a esta compra.</span>
+      </div>
+      <div id="credit-subnote" class="credit-subnote">
+        ¡Tu recompensa por usar <span style="color: #5A5AA0; text-decoration: underline;">SimpleGo</span>!
+      </div>
+    </div>
+    
+    <div id="compra-options">
+      <div class="compra-box" data-price="25" data-credit="5">
+        <div class="label">Paquete Básico</div>
+        <div class="description">Acceso completo por 30 días + soporte básico</div>
+        
+        <div class="price-section">
+          <div class="price-discount-row">
+            <div class="precio-original">$30</div>
+            <div class="precio-final">$25</div>
+            <div class="descuento">-17%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="compra-box" data-price="45" data-credit="5">
+        <div class="label">Paquete Premium</div>
+        <div class="description">Acceso completo por 90 días + soporte prioritario + extras</div>
+        
+        <div class="price-section">
+          <div class="price-discount-row">
+            <div class="precio-original">$60</div>
+            <div class="precio-final">$45</div>
+            <div class="descuento">-25%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="compra-box" data-price="75" data-credit="5">
+        <div class="label">Paquete Empresarial</div>
+        <div class="description">Acceso ilimitado + soporte 24/7 + funciones avanzadas</div>
+        
+        <div class="price-section">
+          <div class="price-discount-row">
+            <div class="precio-original">$100</div>
+            <div class="precio-final">$75</div>
+            <div class="descuento">-25%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="cta-button" id="comprarBtn">Comprar</button>
+
+    <script src="credits.js"></script>
+  </div>
+</body>
+</html> 
